@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术工程部 2025 年度汇报</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Corporate Zen - Warm Neutrals (#f8fafc) with Tech Blue (#3b82f6) and Energy Green (#10b981) accents. -->
+    
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+
+        /* Chart Container Styling - Mandatory Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Max width constraint */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base height */
+            max-height: 400px; /* Max height constraint */
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px; 
+            }
+        }
+
+        /* Custom Scrollbar for inner content */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        /* Card Hover Effects */
+        .interactive-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .interactive-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .nav-item.active {
+            background-color: #e2e8f0;
+            color: #1e293b;
+            border-right: 4px solid #3b82f6;
+        }
+
+        /* Animation utilities */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    
+    <!-- Application Structure Plan: 
+         Designed as a Management Dashboard to reflect the department's transition to "Information & Energy Management".
+         1. Dashboard: High-level KPIs and Strategic Mission.
+         2. Projects: Filterable list to manage the complexity of engineering tasks.
+         3. Energy Data: Dedicated analytics section for the heavy data in the report.
+         4. Platforms: Interactive grid to explain the complex IT ecosystem.
+         5. Roadmap: Timeline for 2026 planning.
+         Navigation is persistent on the left (desktop) or top (mobile) for easy access.
+    -->
+    
+    <!-- Visualization & Content Choices:
+         1. Energy Stats -> Goal: Compare -> Method: Chart.js Bar Charts (Usage vs Cost) -> Interaction: Toggle View.
+         2. Project List -> Goal: Inform/Organize -> Method: Interactive Card List -> Interaction: Filter by Status.
+         3. Platform Architecture -> Goal: Explain -> Method: Interactive Grid -> Interaction: Click for module details.
+         4. Roadmap -> Goal: Change -> Method: Vertical Timeline -> Interaction: Hover for details.
+         NO SVG or Mermaid used.
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-white border-b border-gray-200 p-4 flex justify-between items-center z-20">
+        <h1 class="text-lg font-bold text-slate-800">技术工程部 2025</h1>
+        <button id="mobile-menu-btn" class="text-slate-600 focus:outline-none">
+            <span class="text-2xl">☰</span>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="bg-white w-full md:w-64 flex-shrink-0 border-r border-gray-200 flex flex-col transition-transform transform -translate-x-full md:translate-x-0 absolute md:relative z-10 h-full">
+        <div class="p-6 border-b border-gray-100 hidden md:block">
+            <h1 class="text-xl font-bold text-slate-800 tracking-tight">技术工程部<br><span class="text-sm text-blue-600 font-normal">2025 年度汇报</span></h1>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li>
+                    <button onclick="router.navigate('dashboard')" class="nav-item w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span>📊</span> 综合概览
+                    </button>
+                </li>
+                <li>
+                    <button onclick="router.navigate('projects')" class="nav-item w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span>🏗️</span> 工程项目管理
+                    </button>
+                </li>
+                <li>
+                    <button onclick="router.navigate('energy')" class="nav-item w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span>⚡</span> 能源数据分析
+                    </button>
+                </li>
+                <li>
+                    <button onclick="router.navigate('platforms')" class="nav-item w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span>💻</span> 数字化平台
+                    </button>
+                </li>
+                <li>
+                    <button onclick="router.navigate('roadmap')" class="nav-item w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span>🚀</span> 2026 规划
+                    </button>
+                </li>
+                <li>
+                    <button onclick="" class="nav-item w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span>🚩</span> BIM 3D展示
+                    </button>
+                    <button onclick="location.href='11.jpg'" class="nav-item w-full text-left px-10 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span> </span> - 土建基础
+                    </button>
+	    <button onclick="location.href='22.jpg'" class="nav-item w-full text-left px-10 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span> </span> - 钢结构
+                    </button>
+	    <button onclick="location.href='33.jpg'" class="nav-item w-full text-left px-10 py-3 text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                        <span> </span> - 安装管线
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="p-4 border-t border-gray-100 bg-slate-50">
+            <div class="text-xs text-slate-500 mb-1">汇报时间</div>
+            <div class="font-medium text-slate-700">2026年 1月</div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto custom-scroll p-4 md:p-8 relative" id="main-content">
+        <!-- Content injected via JS -->
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Data Store ---
+        const appData = {
+            metrics: [
+                { label: '管理费总额 (元)', value: '901,376', sub: '滨江区占比 59%', icon: '💰', color: 'bg-blue-100 text-blue-700' },
+                { label: '光伏发电 (kWh)', value: '96,596', sub: '澄江东路58号0.1MWp', icon: '☀️', color: 'bg-yellow-100 text-yellow-700' },
+                { label: '团队规模 (人)', value: '23', sub: '滨江与周庄双区', icon: '👥', color: 'bg-purple-100 text-purple-700' },
+                { label: '工程重点', value: '3D 建模', sub: '全构件矢量模型应用', icon: '🧊', color: 'bg-emerald-100 text-emerald-700' }
+            ],
+            projects: [
+                { title: '澄江东路市政管道阀门更换', type: 'completed', category: '生产保障', desc: '春节假期完成，保证车间正常生产。' },
+                { title: '消防及给水管路改造', type: 'completed', category: '消防水务', desc: '澄江东路1号、282号及58号办公楼改造，查漏补漏。' },
+                { title: '智能用能表安装', type: 'completed', category: '节能改造', desc: '紫金山庄及各门店安装，避免能源费用拖欠。' },
+                { title: '名鸿新厂房临时水电接入', type: 'completed', category: '新项目', desc: '包含消防管路变更等。' },
+                { title: '周庄凯瑟改建项目', type: 'completed', category: '新项目', desc: '水电及消防设施安装及调试。' },
+                { title: '商务大厦蒸汽管道修理', type: 'completed', category: '生产保障', desc: '检修蒸汽房安全阀和管道。' },
+                { title: '名鸿厂房七期', type: 'ongoing', category: '在建工程', desc: '25/10 - 26/6。三维矢量建模（土建/钢构/管线），实时更新设备规格，辅助审计对量。' },
+                { title: '周庄凯瑟 NC/MES 对接', type: 'completed', category: '信息化', desc: '网络 VPN 对接升级。' },
+                { title: 'IT发电机房维护', type: 'completed', category: '生产保障', desc: '模塑科技机房检修，提升安全性。' }
+            ],
+            energy: {
+                binjiang: { elec: 40747355, elecCost: 30666966, water: 244635, waterCost: 1003003 },
+                zhouzhuang: { elec: 12316780, elecCost: 10226149, water: 92890, waterCost: 380849 }
+            },
+            platforms: [
+                { name: '能源管理平台', icon: '⚡', desc: '变配电房、泵房监控，负荷分析，峰谷分析。', details: '利用智能化技术，实时监测参数与视频。优化能源平衡，预测消耗。' },
+                { name: 'NC 信息平台', icon: '📂', desc: '覆盖集团及子公司的财务、供应链核心业务。', details: '包含：财务、物料、销售、MES（制造执行）、BPM（流程）、预算、立库、项目管理等模块。' },
+                { name: '消防管理平台', icon: '🔥', desc: '火灾报警与联动系统监控。', details: '专职人员7*24小时监控，确保设施符合验收规范。' },
+                { name: '特种设备管理', icon: '⚙️', desc: '行车、叉车、货梯、压力容器年检。', details: '建立交接班、工作票、巡回检查制度，落实安全责任。' }
+            ],
+            roadmap: [
+                { quarter: '工程基建', title: '基础设施完善', desc: '地下老化管线更换，名鸿新厂房交付跟进，水电气图纸数字化归档。' },
+                { quarter: '能源挖掘', title: '降本增效分析', desc: '利用平台历史数据挖掘节能潜力，提出工艺改进建议。' },
+                { quarter: '信息化', title: 'NC 升级与采购', desc: '引入电子采购模块，费用预算管理，评估 NC 升级至 BIP。' },
+                { quarter: '系统安全', title: '架构重构', desc: '服务器存储虚拟化/云化，提升安全性与稳定性。' }
+            ]
+        };
+
+        // --- Router & View Rendering ---
+        const router = {
+            currentRoute: 'dashboard',
+            navigate: function(route) {
+                this.currentRoute = route;
+                this.updateUI();
+                
+                // Close mobile menu if open
+                const nav = document.getElementById('sidebar');
+                if (!nav.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+                    nav.classList.add('-translate-x-full');
+                }
+            },
+            updateUI: function() {
+                // Update Sidebar Active State
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('onclick').includes(this.currentRoute)) {
+                        btn.classList.add('active');
+                    }
+                });
+
+                // Render Content
+                const main = document.getElementById('main-content');
+                main.innerHTML = ''; // Clear current
+                
+                switch(this.currentRoute) {
+                    case 'dashboard': renderDashboard(main); break;
+                    case 'projects': renderProjects(main); break;
+                    case 'energy': renderEnergy(main); break;
+                    case 'platforms': renderPlatforms(main); break;
+                    case 'roadmap': renderRoadmap(main); break;
+                }
+            }
+        };
+
+        // --- Views ---
+
+        function renderDashboard(container) {
+            const html = `
+                <div class="fade-in max-w-5xl mx-auto">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">2025 年度工作概览</h2>
+                        <p class="text-slate-600">本年度技术工程部深入贯彻“规范化、精细化、信息化”理念，成功推动部门职能从单一工程管理向<span class="font-bold text-blue-600">“能源+信息”双核驱动</span>转型。重点聚焦能源安全、质量提升与成本控制。</p>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                        ${appData.metrics.map(m => `
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between h-32">
+                                <div class="flex justify-between items-start">
+                                    <span class="text-sm font-medium text-slate-500">${m.label}</span>
+                                    <span class="${m.color} p-2 rounded-lg text-lg">${m.icon}</span>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-slate-800">${m.value}</div>
+                                    <div class="text-xs text-slate-400 mt-1">${m.sub}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Mission Card -->
+                    <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-2xl p-8 mb-10 shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">核心职能转型</h3>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="border-l-4 border-slate-500 pl-4">
+                                <h4 class="text-slate-400 text-sm uppercase tracking-wider mb-1">过去 Focus</h4>
+                                <p class="text-lg">单纯的工程施工与维护管理</p>
+                            </div>
+                            <div class="border-l-4 border-emerald-400 pl-4">
+                                <h4 class="text-emerald-300 text-sm uppercase tracking-wider mb-1">现在 Focus</h4>
+                                <p class="text-lg">能源安全保障、能源质量提高、能源成本控制 & 信息化集成</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links to other sections -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div onclick="router.navigate('energy')" class="interactive-card bg-white p-6 rounded-xl border border-gray-200">
+                            <h3 class="font-bold text-lg mb-2 flex items-center gap-2">⚡ 能源数据中心</h3>
+                            <p class="text-sm text-slate-500">查看滨江与周庄两区的年度水电耗用对比分析。</p>
+                        </div>
+                         <div onclick="router.navigate('projects')" class="interactive-card bg-white p-6 rounded-xl border border-gray-200">
+                            <h3 class="font-bold text-lg mb-2 flex items-center gap-2">🏗️ 重点工程回顾</h3>
+                            <p class="text-sm text-slate-500">浏览名鸿七期等在建及已完工项目的详细进展。</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function renderProjects(container) {
+            const html = `
+                <div class="fade-in max-w-5xl mx-auto">
+                    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">工程项目管理</h2>
+                            <p class="text-slate-500 text-sm mt-1">2025年完成多项生产保障与消防改造工程，并在建名鸿七期重点项目。</p>
+                        </div>
+                        <div class="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                            <button onclick="filterProjects('all')" class="project-filter px-4 py-1.5 text-sm rounded-md bg-blue-50 text-blue-600 font-medium" data-filter="all">全部</button>
+                            <button onclick="filterProjects('completed')" class="project-filter px-4 py-1.5 text-sm rounded-md text-slate-600 hover:bg-slate-50" data-filter="completed">已完成</button>
+                            <button onclick="filterProjects('ongoing')" class="project-filter px-4 py-1.5 text-sm rounded-md text-slate-600 hover:bg-slate-50" data-filter="ongoing">在建中</button>
+                        </div>
+                    </div>
+
+                    <div id="project-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+            filterProjects('all');
+        }
+
+        function filterProjects(filter) {
+            // Update buttons
+            document.querySelectorAll('.project-filter').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('bg-blue-50', 'text-blue-600', 'font-medium');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    btn.classList.remove('bg-blue-50', 'text-blue-600', 'font-medium');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+
+            const list = document.getElementById('project-list');
+            const filtered = appData.projects.filter(p => filter === 'all' || p.type === filter);
+            
+            list.innerHTML = filtered.map(p => `
+                <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 transform translate-x-8 -translate-y-8 rotate-45 ${p.type === 'completed' ? 'bg-emerald-100' : 'bg-amber-100'}"></div>
+                    <div class="flex justify-between items-start mb-2 relative z-10">
+                        <span class="text-xs font-semibold px-2 py-1 rounded bg-slate-100 text-slate-600">${p.category}</span>
+                        <span class="text-xs font-bold ${p.type === 'completed' ? 'text-emerald-600' : 'text-amber-600'}">
+                            ${p.type === 'completed' ? '✔️ 已完成' : '⏳ 进行中'}
+                        </span>
+                    </div>
+                    <h3 class="font-bold text-slate-800 mb-2 relative z-10">${p.title}</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed relative z-10">${p.desc}</p>
+                    ${p.title.includes('名鸿厂房七期') ? `
+                        <div class="mt-4 pt-4 border-t border-slate-100">
+                            <div class="text-xs text-blue-600 font-bold flex items-center gap-1">
+                                <span>🧊</span> 亮点: 1:1 全构件完整模型应用
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderEnergy(container) {
+            const html = `
+                <div class="fade-in max-w-5xl mx-auto">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-slate-800">能源数据分析</h2>
+                        <p class="text-slate-500 mt-1 text-sm">此版块展示2025年1-12月滨江区与周庄区的能耗对比。数据来源于能源管理平台的实时监测与核算。</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                        <!-- Electricity Chart Card -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-700 flex items-center gap-2">⚡ 用电量分析</h3>
+                            </div>
+                            <!-- Chart Container: Responsive constraints applied -->
+                            <div class="chart-container">
+                                <canvas id="elecChart"></canvas>
+                            </div>
+                            <div class="mt-4 grid grid-cols-2 gap-4 text-center text-sm">
+                                <div class="bg-slate-50 p-2 rounded">
+                                    <div class="text-slate-400 text-xs">滨江单价</div>
+                                    <div class="font-bold">0.7526 元</div>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded">
+                                    <div class="text-slate-400 text-xs">周庄单价</div>
+                                    <div class="font-bold">0.8302 元</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Water Chart Card -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-700 flex items-center gap-2">💧 用水量分析</h3>
+                            </div>
+                            <!-- Chart Container: Responsive constraints applied -->
+                            <div class="chart-container">
+                                <canvas id="waterChart"></canvas>
+                            </div>
+                            <div class="mt-4 text-center text-sm bg-blue-50 p-2 rounded text-blue-700">
+                                统一用水单价: 4.1000 元/吨
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+
+            // Render Charts
+            setTimeout(() => {
+                initEnergyCharts();
+            }, 0);
+        }
+
+        function initEnergyCharts() {
+            // Electricity Chart
+            new Chart(document.getElementById('elecChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['滨江区', '周庄区'],
+                    datasets: [
+                        {
+                            label: '用电量 (kWh)',
+                            data: [appData.energy.binjiang.elec, appData.energy.zhouzhuang.elec],
+                            backgroundColor: '#3b82f6',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '总费用 (元)',
+                            data: [appData.energy.binjiang.elecCost, appData.energy.zhouzhuang.elecCost],
+                            backgroundColor: '#1e40af',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { position: 'left', title: {display: true, text: 'kWh'} },
+                        y1: { position: 'right', title: {display: true, text: 'RMB'}, grid: {drawOnChartArea: false} }
+                    }
+                }
+            });
+
+            // Water Chart
+            new Chart(document.getElementById('waterChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['滨江区', '周庄区'],
+                    datasets: [
+                        {
+                            label: '用水量 (t)',
+                            data: [appData.energy.binjiang.water, appData.energy.zhouzhuang.water],
+                            backgroundColor: '#06b6d4',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '总费用 (元)',
+                            data: [appData.energy.binjiang.waterCost, appData.energy.zhouzhuang.waterCost],
+                            backgroundColor: '#0e7490',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { position: 'left', title: {display: true, text: '吨'} },
+                        y1: { position: 'right', title: {display: true, text: 'RMB'}, grid: {drawOnChartArea: false} }
+                    }
+                }
+            });
+        }
+
+        function renderPlatforms(container) {
+            const html = `
+                <div class="fade-in max-w-5xl mx-auto">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-slate-800">数字化平台架构</h2>
+                        <p class="text-slate-500 text-sm mt-1">目前用友 NC 信息平台与能源管理平台已基本覆盖集团核心业务，形成两大数字化支柱。</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        ${appData.platforms.map((p, index) => `
+                            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group">
+                                <div class="p-6 border-b border-slate-50 bg-slate-50/50">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-xl shadow-sm">${p.icon}</div>
+                                        <h3 class="font-bold text-lg text-slate-800">${p.name}</h3>
+                                    </div>
+                                    <p class="text-sm text-slate-500">${p.desc}</p>
+                                </div>
+                                <div class="p-6 bg-white">
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">详细功能 & 价值</h4>
+                                    <p class="text-slate-700 text-sm leading-relaxed">${p.details}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function renderRoadmap(container) {
+            const html = `
+                <div class="fade-in max-w-4xl mx-auto">
+                    <div class="mb-10 text-center">
+                        <h2 class="text-2xl font-bold text-slate-800">2026 年度重点工作规划</h2>
+                        <p class="text-slate-500 mt-2">在新的一年，我们将继续深化“能源挖掘”与“系统安全”，推动 NC 向 BIP 升级。</p>
+                    </div>
+
+                    <div class="relative border-l-2 border-blue-200 ml-4 md:ml-0 md:pl-0 space-y-8">
+                        ${appData.roadmap.map((item, idx) => `
+                            <div class="relative md:flex items-center group">
+                                <!-- Dot -->
+                                <div class="absolute -left-[9px] top-0 md:left-1/2 md:-ml-[9px] w-5 h-5 rounded-full border-4 border-white bg-blue-500 shadow z-10"></div>
+                                
+                                <!-- Content -->
+                                <div class="ml-6 md:ml-0 md:w-1/2 ${idx % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12 md:left-1/2'}">
+                                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100 hover:border-blue-300 transition-colors">
+                                        <span class="inline-block px-2 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded mb-2">${item.quarter}</span>
+                                        <h3 class="text-lg font-bold text-slate-800 mb-2">${item.title}</h3>
+                                        <p class="text-sm text-slate-600">${item.desc}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            router.updateUI(); // Load default route
+
+            // Mobile menu toggle
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                const nav = document.getElementById('sidebar');
+                if (nav.classList.contains('-translate-x-full')) {
+                    nav.classList.remove('-translate-x-full');
+                } else {
+                    nav.classList.add('-translate-x-full');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
