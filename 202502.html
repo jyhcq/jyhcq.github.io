@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术工程部2025年度数字化总结</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="./chart.js"></script>
+    <!-- Google Fonts (Noto Sans SC) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f3f4f6; /* Cool gray 100 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Limit chart width on large screens */
+            height: 350px;
+            margin: 0 auto;
+        }
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        /* Custom Scrollbar for lists */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 3px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .nav-item.active {
+            background-color: #e0f2fe; /* sky-100 */
+            color: #0369a1; /* sky-700 */
+            border-left: 4px solid #0ea5e9; /* sky-500 */
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <!-- Chosen Palette: Corporate Blue & Slate (Professional, Trustworthy, Technical) -->
+    <!-- Application Structure Plan:
+        1. Layout: Sidebar navigation (Desktop) / Top menu (Mobile) + Main Content Area.
+        2. Sections:
+           - "战略总览" (Overview): Transformation story, Key KPIs.
+           - "智慧能源" (Energy Intelligence): Charts for Elec/Water usage, Platform benefits.
+           - "工程全景" (Engineering Landscape): Completed/Ongoing projects list, BIM highlight.
+           - "信息与规划" (IT & Future): System map, 2026 Roadmap.
+           - "团队运营" (Ops & Team): Roles, Maintenance duties.
+        3. Rationale: Grouping by "Function" (Energy vs IT vs Engineering) is more logical for a dashboard app than the linear text of the report. 
+    -->
+    <!-- Visualization & Content Choices:
+        - Energy Data -> Bar/Pie Charts -> Compare Binjiang vs Zhouzhuang costs/usage.
+        - Projects -> Scrollable List + "Featured Project" Card -> Highlight the BIM 1:1 modeling value.
+        - Future Roadmap -> Timeline/Cards -> Visualize the evolution to BIP/Cloud.
+        - Tech Stack -> Grid Layout -> Show the breadth of system coverage.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="text-slate-800 h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-white shadow-sm p-4 flex justify-between items-center z-20">
+        <h1 class="text-lg font-bold text-slate-800">技术工程部 2025</h1>
+        <button id="mobile-menu-btn" class="text-slate-600 focus:outline-none">
+            ☰
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="bg-white w-full md:w-64 h-full shadow-lg flex-shrink-0 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 absolute md:relative z-10">
+        <div class="p-6 border-b border-slate-100 hidden md:block">
+            <h1 class="text-xl font-bold text-slate-800">技术工程部</h1>
+            <p class="text-xs text-slate-500 mt-1">2025 年度数字化总结</p>
+        </div>
+        <div class="flex-1 py-4 overflow-y-auto">
+            <ul class="space-y-1">
+                <li><button onclick="switchTab('overview')" class="nav-item w-full text-left px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 transition-colors border-l-4 border-transparent active" data-tab="overview">📊 战略总览</button></li>
+                <li><button onclick="switchTab('energy')" class="nav-item w-full text-left px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 transition-colors border-l-4 border-transparent" data-tab="energy">⚡ 智慧能源管理</button></li>
+                <li><button onclick="switchTab('engineering')" class="nav-item w-full text-left px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 transition-colors border-l-4 border-transparent" data-tab="engineering">🏗️ 工程项目与BIM</button></li>
+                <li><button onclick="switchTab('it')" class="nav-item w-full text-left px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 transition-colors border-l-4 border-transparent" data-tab="it">💻 信息平台与规划</button></li>
+                <li><button onclick="switchTab('team')" class="nav-item w-full text-left px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 transition-colors border-l-4 border-transparent" data-tab="team">👥 团队与运营</button></li>
+            </ul>
+        </div>
+        <div class="p-4 border-t border-slate-100 text-xs text-slate-400 text-center">
+            集团技术工程部 2026.01
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-8 relative" id="main-content">
+        
+        <!-- Tab: Overview -->
+        <div id="overview" class="tab-content fade-in block space-y-6">
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+                <h2 class="text-2xl font-bold mb-2">战略转型年：从“工程管理”向“数智服务”</h2>
+                <p class="text-slate-600 leading-relaxed">
+                    2025年，技术工程部紧跟集团现代管理要求，重新定义了部门职能。我们不再仅仅是“工程维修”，而是确立了以<strong>“能源与信息”</strong>为两条主线的核心战略。通过智能化手段集成数据，我们在保障安全生产的同时，实现了能源质量的提升与成本的有效控制，为集团及各子公司的发展提供了坚实的数字底座。
+                </p>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100">
+                    <div class="text-slate-400 text-sm font-medium mb-1">年度滨江区用电</div>
+                    <div class="text-2xl font-bold text-blue-600">4,074 万 <span class="text-sm text-slate-500">kWh</span></div>
+                    <div class="text-xs text-green-500 mt-2">↑ 智能化监控覆盖</div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100">
+                    <div class="text-slate-400 text-sm font-medium mb-1">年度光伏发电</div>
+                    <div class="text-2xl font-bold text-yellow-500">96,596 <span class="text-sm text-slate-500">kWh</span></div>
+                    <div class="text-xs text-slate-400 mt-2">澄江东路58号项目</div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100">
+                    <div class="text-slate-400 text-sm font-medium mb-1">集团管理费收取</div>
+                    <div class="text-2xl font-bold text-emerald-600">90.1 <span class="text-sm text-slate-500">万元</span></div>
+                    <div class="text-xs text-slate-400 mt-2">包含周庄区 36.8万元</div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100">
+                    <div class="text-slate-400 text-sm font-medium mb-1">团队规模优化</div>
+                    <div class="text-2xl font-bold text-indigo-600">23 <span class="text-sm text-slate-500">人</span></div>
+                    <div class="text-xs text-slate-400 mt-2">滨江与周庄总计</div>
+                </div>
+            </div>
+
+            <!-- Core Functions Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="font-bold text-lg mb-4 text-slate-700">🏭 能源管理平台</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>全景监控：</strong> 变/配电房、泵房实时参数监测与视频监控。</li>
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>负荷分析：</strong> 实时监测电负荷，限定在指标内，避免超标罚款。</li>
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>峰谷优化：</strong> 统计分析能源消纳，利用峰谷电价差降低成本。</li>
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>网上申报：</strong> 完成无锡重点用能单位网上申报与能源审计。</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="font-bold text-lg mb-4 text-slate-700">🌐 信息管理平台</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>全面覆盖：</strong> 用友NC覆盖集团及子公司（财务/供应链/销售）。</li>
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>智能制造：</strong> 深度集成 MES, BPM, WMS, U9 Cloud 等系统。</li>
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>网络安全：</strong> 监管服务器/数据库，制定备份策略，优化IP分配。</li>
+                        <li class="flex items-start"><span class="mr-2">🔹</span> <strong>服务支持：</strong> 提供软件培训、技术支持及硬件维护。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Energy Intelligence -->
+        <div id="energy" class="tab-content hidden space-y-6">
+            <div class="mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">智慧能源管理</h2>
+                <p class="text-slate-600 mt-2">
+                    本年度，我们利用成熟的智能化技术，实现了对水、电、气等能源的精细化管理。下图展示了2025年1-12月主要区域的能源耗用情况，这些数据是我们进行成本核算与节能优化的基础。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Electricity Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-slate-700 mb-4 text-center">2025年各区用电量对比 (kWh)</h3>
+                    <div class="chart-container">
+                        <canvas id="elecChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-400 mt-2">滨江区包含主要生产车间，能耗占比约76%</p>
+                </div>
+
+                <!-- Water Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-slate-700 mb-4 text-center">2025年各区用水量对比 (吨)</h3>
+                    <div class="chart-container">
+                        <canvas id="waterChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Analysis Table -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700">💰 能源费用与单价分析</h3>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">2025年度汇总</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-slate-500 uppercase">
+                            <tr>
+                                <th class="px-6 py-3">区域</th>
+                                <th class="px-6 py-3">能源类型</th>
+                                <th class="px-6 py-3 text-right">总耗用量</th>
+                                <th class="px-6 py-3 text-right">总费用 (元)</th>
+                                <th class="px-6 py-3 text-right">平均单价</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="px-6 py-4 font-medium" rowspan="2">滨江区</td>
+                                <td class="px-6 py-4"><span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>电力</td>
+                                <td class="px-6 py-4 text-right font-mono">40,747,355</td>
+                                <td class="px-6 py-4 text-right font-mono">30,666,966</td>
+                                <td class="px-6 py-4 text-right font-bold text-blue-600">0.7526 元/kWh</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4"><span class="inline-block w-2 h-2 rounded-full bg-cyan-400 mr-2"></span>水务</td>
+                                <td class="px-6 py-4 text-right font-mono">244,635</td>
+                                <td class="px-6 py-4 text-right font-mono">1,003,003</td>
+                                <td class="px-6 py-4 text-right font-bold text-cyan-600">4.1000 元/t</td>
+                            </tr>
+                            <tr class="bg-slate-50/50">
+                                <td class="px-6 py-4 font-medium" rowspan="2">周庄区</td>
+                                <td class="px-6 py-4"><span class="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>电力</td>
+                                <td class="px-6 py-4 text-right font-mono">12,316,780</td>
+                                <td class="px-6 py-4 text-right font-mono">10,226,149</td>
+                                <td class="px-6 py-4 text-right font-bold text-blue-600">0.8302 元/kWh</td>
+                            </tr>
+                            <tr class="bg-slate-50/50">
+                                <td class="px-6 py-4"><span class="inline-block w-2 h-2 rounded-full bg-cyan-400 mr-2"></span>水务</td>
+                                <td class="px-6 py-4 text-right font-mono">92,890</td>
+                                <td class="px-6 py-4 text-right font-mono">380,849</td>
+                                <td class="px-6 py-4 text-right font-bold text-cyan-600">4.1000 元/t</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-6">
+                <h4 class="font-bold text-yellow-800 mb-2">⚡ 亮点：绿色能源</h4>
+                <p class="text-sm text-yellow-700">
+                    澄江东路58号 0.1MW 光伏项目在2025年全年累计发电 <strong>96,596 kWh</strong>。这不仅补充了电力供应，更是集团践行绿色低碳发展的重要一步。
+                </p>
+            </div>
+        </div>
+
+        <!-- Tab: Engineering Projects -->
+        <div id="engineering" class="tab-content hidden space-y-6">
+            <div class="mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">工程项目与BIM应用</h2>
+                <p class="text-slate-600 mt-2">
+                    2025年，我们不仅完成了多项保障生产和安全的基建维修，更在“在建工程”中引入了BIM技术，实现了从二维图纸到三维全构件模型的管理飞跃。
+                </p>
+            </div>
+
+            <!-- Spotlight: BIM -->
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                    <div>
+                        <span class="bg-blue-600 text-xs px-2 py-1 rounded text-white font-bold tracking-wide">在建重点</span>
+                        <h3 class="text-2xl font-bold mt-2">名鸿厂房七期 (2025/10 - 2026/06)</h3>
+                    </div>
+                    <div class="mt-4 md:mt-0 text-right">
+                        <div class="text-sm text-slate-400">数字化建模比例</div>
+                        <div class="text-3xl font-bold text-blue-400">1 : 1</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-300 mb-2">🏗️ 全构件完整模型</h4>
+                        <p class="text-slate-300">建立了包含土建、钢结构、安装管线的全套模型。对每一个设备部件规格型号实时更新，实现可视化管理。</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-300 mb-2">💰 成本与审计控制</h4>
+                        <p class="text-slate-300">利用三维矢量建模方便项目跟踪及审计对量，精准控制重点成本，避免了传统计算的盲区。</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-300 mb-2">📐 纠错与优化</h4>
+                        <p class="text-slate-300">在施工前对图纸提出意见反馈，更正错项漏项，补充外围施工缺失部分，前置解决施工冲突。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Projects List -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="font-bold text-lg mb-4 text-slate-700">✅ 2025 已完成重点工程</h3>
+                <div class="overflow-y-auto max-h-80 custom-scroll pr-2">
+                    <ul class="space-y-4">
+                        <li class="flex gap-4 p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">🛠️</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">澄江东路两厂区市政管道阀门更换</h4>
+                                <p class="text-sm text-slate-500">春节假期突击施工，保障了节后车间正常生产，避免了停工风险。</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4 p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+                            <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600">🔥</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">消防设施及泵房改造</h4>
+                                <p class="text-sm text-slate-500">涉及澄江东路1号、58号及中路282号。增加消防设施，查漏补漏，提升安全基线。</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4 p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">💻</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">周庄凯瑟 MES/VPN 对接</h4>
+                                <p class="text-sm text-slate-500">完成NC供应链升级与MES系统的网络VPN对接，打通了供应链数据传输的“最后一公里”。</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4 p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+                            <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">⚡</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">名鸿新厂房临时水电接入</h4>
+                                <p class="text-sm text-slate-500">快速响应新厂房建设需求，完成临时水电接入及消防管路变更，保障建设进度。</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4 p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+                            <div class="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">📉</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">智能用能表安装</h4>
+                                <p class="text-sm text-slate-500">紫金山庄及各门店全覆盖，杜绝能源费用拖欠，实现计量智能化。</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: IT Platform -->
+        <div id="it" class="tab-content hidden space-y-6">
+            <div class="mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">信息平台与未来规划</h2>
+                <p class="text-slate-600 mt-2">
+                    信息平台是集团运营的神经中枢。目前用友NC已基本覆盖全集团，并连接了MES、BPM等业务系统。2026年，我们将重点推进系统升级与安全架构重塑。
+                </p>
+            </div>
+
+            <!-- System Ecosystem Grid -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h3 class="font-bold text-slate-700 mb-6 text-center">当前信息系统生态全景</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <!-- Core -->
+                    <div class="col-span-2 md:col-span-4 p-4 bg-blue-50 border border-blue-200 rounded-lg mb-2">
+                        <div class="font-bold text-blue-800 text-lg">用友 NC 信息平台 (Core)</div>
+                        <div class="text-sm text-blue-600 mt-1">财务总账 · 应收应付 · 固定资产 · 物料管理 · 销售管理</div>
+                    </div>
+                    
+                    <!-- Sub Systems -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div class="font-bold text-slate-700">MES</div>
+                        <div class="text-xs text-slate-500 mt-1">制造执行<br>(精力模具/汽车装备)</div>
+                    </div>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div class="font-bold text-slate-700">BPM</div>
+                        <div class="text-xs text-slate-500 mt-1">业务流程管理<br>(精力模具)</div>
+                    </div>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div class="font-bold text-slate-700">U9 Cloud</div>
+                        <div class="text-xs text-slate-500 mt-1">后续对接 MES/WMS<br>(名鸿车顶)</div>
+                    </div>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div class="font-bold text-slate-700">立库系统</div>
+                        <div class="text-xs text-slate-500 mt-1">智能化仓储<br>(名鸿车顶)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Roadmap -->
+            <h3 class="font-bold text-lg text-slate-700 mb-4">🚀 2026 重点工作规划</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-5 rounded-xl border-l-4 border-indigo-500 shadow-sm">
+                    <h4 class="font-bold text-slate-800">NC 升级 BIP</h4>
+                    <p class="text-sm text-slate-600 mt-2">
+                        现有NC平台面临升级需求。计划重新评估并提出升级方案，以适配各子公司MES等业务平台的对接需求，打造更强大的企业数字中台。
+                    </p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border-l-4 border-red-500 shadow-sm">
+                    <h4 class="font-bold text-slate-800">系统安全架构重建</h4>
+                    <p class="text-sm text-slate-600 mt-2">
+                        针对核心业务对稳定性与安全性的高要求，考虑引入<strong>服务器存储虚拟化或云服务</strong>，实现系统架构的灾备与灵活部署，确保业务连续性。
+                    </p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border-l-4 border-emerald-500 shadow-sm">
+                    <h4 class="font-bold text-slate-800">电子采购模块</h4>
+                    <p class="text-sm text-slate-600 mt-2">
+                        实现供应商全生命周期管理，涵盖寻源、竞价、招投标。旨在提高采购效率，并确保采购审计工作有据可查。
+                    </p>
+                </div>
+                <div class="bg-white p-5 rounded-xl border-l-4 border-amber-500 shadow-sm">
+                    <h4 class="font-bold text-slate-800">资金/预算管理深化</h4>
+                    <p class="text-sm text-slate-600 mt-2">
+                        在现有财务模块基础上，协同多部门评估可行性方案，满足集团财务更高的预算控制与计审信息化需求。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Team & Ops -->
+        <div id="team" class="tab-content hidden space-y-6">
+            <div class="mb-4">
+                <h2 class="text-2xl font-bold text-slate-800">团队管理与日常运营</h2>
+                <p class="text-slate-600 mt-2">
+                    我们将人员配置从传统的“人海战术”向“专业精兵”调整。现滨江与周庄共23人，大幅减少值班人员，转而强化消控室持证上岗与专业维修能力。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Role Card 1 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-3 font-bold text-slate-700 border-b border-slate-200">
+                        ⚡ 值班电工 (7*24h)
+                    </div>
+                    <div class="p-4 text-sm text-slate-600 space-y-2">
+                        <p>• 四班三运转，负责变配电站运行监视。</p>
+                        <p>• 应急故障处理与协助维修。</p>
+                        <p>• 每班一次实地巡检，确保设备状态良好。</p>
+                    </div>
+                </div>
+
+                <!-- Role Card 2 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-3 font-bold text-slate-700 border-b border-slate-200">
+                        🛠️ 维修维护
+                    </div>
+                    <div class="p-4 text-sm text-slate-600 space-y-2">
+                        <p>• 水电气及消防设施维修。</p>
+                        <p>• 外围蒸汽管道巡检。</p>
+                        <p>• 施工单位现场管理与验收。</p>
+                        <p>• 特种设备（行车/叉车/货梯）安全管理。</p>
+                    </div>
+                </div>
+
+                <!-- Role Card 3 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-3 font-bold text-slate-700 border-b border-slate-200">
+                        🔥 消防设施操作
+                    </div>
+                    <div class="p-4 text-sm text-slate-600 space-y-2">
+                        <p>• <strong>新配置岗位：</strong>需持消防设施操作员证。</p>
+                        <p>• 中控设备监视与运用。</p>
+                        <p>• 每日点检与火警异常处理。</p>
+                    </div>
+                </div>
+                
+                 <!-- Role Card 4 -->
+                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-3 font-bold text-slate-700 border-b border-slate-200">
+                        💻 网络与系统管理
+                    </div>
+                    <div class="p-4 text-sm text-slate-600 space-y-2">
+                        <p>• 网络安全设备调试与IP分配。</p>
+                        <p>• 网站/服务器监控与数据备份。</p>
+                        <p>• 信息系统实施跟踪与用户权限管理。</p>
+                        <p>• 软件维护开发与用户培训。</p>
+                    </div>
+                </div>
+
+                <!-- Role Card 5 -->
+                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-slate-100 px-4 py-3 font-bold text-slate-700 border-b border-slate-200">
+                        📊 综合与能源核算
+                    </div>
+                    <div class="p-4 text-sm text-slate-600 space-y-2">
+                        <p>• 水电气分摊核算与费用收缴。</p>
+                        <p>• 能源数据汇总与对外申报。</p>
+                        <p>• 工程档案管理与部门绩效考核。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Management Logic -->
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 mt-4">
+                <h3 class="font-bold text-blue-800 mb-3">制度化管理体系</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-white text-blue-600 text-xs rounded-full border border-blue-200 shadow-sm">交接班制度</span>
+                    <span class="px-3 py-1 bg-white text-blue-600 text-xs rounded-full border border-blue-200 shadow-sm">工作票制度</span>
+                    <span class="px-3 py-1 bg-white text-blue-600 text-xs rounded-full border border-blue-200 shadow-sm">安全维修保养制度</span>
+                    <span class="px-3 py-1 bg-white text-blue-600 text-xs rounded-full border border-blue-200 shadow-sm">报修管理制度</span>
+                    <span class="px-3 py-1 bg-white text-blue-600 text-xs rounded-full border border-blue-200 shadow-sm">巡回检查制度</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // State Management
+        const state = {
+            currentTab: 'overview',
+            chartsInitialized: false
+        };
+
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Event Listeners
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Update State
+            state.currentTab = tabId;
+
+            // Update UI: Sidebar Active State
+            navItems.forEach(btn => {
+                if (btn.dataset.tab === tabId) {
+                    btn.classList.add('active', 'bg-slate-50', 'text-blue-700', 'border-blue-500');
+                    btn.classList.remove('border-transparent');
+                } else {
+                    btn.classList.remove('active', 'bg-slate-50', 'text-blue-700', 'border-blue-500');
+                    btn.classList.add('border-transparent');
+                }
+            });
+
+            // Update UI: Content Visibility
+            tabContents.forEach(content => {
+                if (content.id === tabId) {
+                    content.classList.remove('hidden');
+                    content.classList.add('fade-in');
+                } else {
+                    content.classList.add('hidden');
+                    content.classList.remove('fade-in');
+                }
+            });
+
+            // Mobile: Close sidebar after selection
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+            }
+
+            // Init charts if Energy tab is selected for the first time
+            if (tabId === 'energy' && !state.chartsInitialized) {
+                initCharts();
+                state.chartsInitialized = true;
+            }
+        }
+
+        // Chart Initialization
+        function initCharts() {
+            // Electricity Chart
+            const ctxElec = document.getElementById('elecChart').getContext('2d');
+            new Chart(ctxElec, {
+                type: 'bar',
+                data: {
+                    labels: ['滨江区', '周庄区'],
+                    datasets: [{
+                        label: '用电量 (kWh)',
+                        data: [40747355, 12316780],
+                        backgroundColor: ['#3b82f6', '#60a5fa'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString() + ' kWh';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 10000).toFixed(0) + '万';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Water Chart
+            const ctxWater = document.getElementById('waterChart').getContext('2d');
+            new Chart(ctxWater, {
+                type: 'bar',
+                data: {
+                    labels: ['滨江区', '周庄区'],
+                    datasets: [{
+                        label: '用水量 (吨)',
+                        data: [244635, 92890],
+                        backgroundColor: ['#06b6d4', '#22d3ee'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString() + ' 吨';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 10000).toFixed(0) + '万';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize with first tab
+        // switchTab('overview'); // Already set by default HTML structure but good for reset
+    </script>
+</body>
+</html>
