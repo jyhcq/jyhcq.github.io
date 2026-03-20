@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄陈强 - 个人简历</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+        }
+        @media print {
+            body { background: white; }
+            .page { margin: 0; box-shadow: none; }
+        }
+        .left-col {
+            width: 35%;
+            border-right: 1px solid #e5e7eb;
+            padding-right: 1.5rem;
+        }
+        .right-col {
+            width: 65%;
+            padding-left: 1.5rem;
+        }
+        .section-title {
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 0.25rem;
+            margin-bottom: 1rem;
+            color: #1e40af;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .tag {
+            background-color: #eff6ff;
+            color: #1e40af;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- 左侧栏 -->
+    <div class="left-col">
+        <div class="text-center mb-8">
+            <div class="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-4 overflow-hidden flex items-center justify-center border-4 border-blue-50">
+                <!-- 占位头像，可自行替换 -->
+                <svg class="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800">黄陈强</h1>
+            <p class="text-blue-600 font-medium mt-1">建设工程项目经理</p>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="section-title text-sm uppercase tracking-wider">联系方式</h2>
+            <ul class="text-sm space-y-3">
+                <li class="flex items-center">
+                    <span class="w-5 text-gray-400">📞</span>
+                    <span>177-1530-1131</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="w-5 text-gray-400">💬</span>
+                    <span>ijiangyin (微信)</span>
+                </li>
+                <li class="flex items-center">
+                    <span class="w-5 text-gray-400">📍</span>
+                    <span>江苏 · 无锡/江阴</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="section-title text-sm uppercase tracking-wider">基本信息</h2>
+            <ul class="text-sm space-y-2 text-gray-600">
+                <li><strong>出生年份：</strong> 1977年</li>
+                <li><strong>学历背景：</strong> 东南大学 本科</li>
+                <li><strong>从业经验：</strong> 10年以上</li>
+            </ul>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="section-title text-sm uppercase tracking-wider">专业标签</h2>
+            <div class="flex flex-wrap">
+                <span class="tag">经验丰富</span>
+                <span class="tag">诚实守信</span>
+                <span class="tag">上进心强</span>
+                <span class="tag">知识丰富</span>
+                <span class="tag">学习力极强</span>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="section-title text-sm uppercase tracking-wider">软件技能</h2>
+            <ul class="text-xs space-y-2 text-gray-600">
+                <li>● 广联达 (GQI, GMA, GCCP6)</li>
+                <li>● Revit (BIM建模)</li>
+                <li>● AutoCAD (工程绘图)</li>
+                <li>● 新点计价软件</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 右侧栏 -->
+    <div class="right-col">
+        <!-- 个人简介 -->
+        <section class="mb-8">
+            <h2 class="section-title">
+                <span class="mr-2">👤</span> 个人简介
+            </h2>
+            <p class="text-sm leading-relaxed text-gray-600">
+                具备深厚的工程技术背景，能力强，操守好，待人真诚，吃苦耐劳。持有多项建设工程行业国家级注册执业证书，具备丰富的现场施工管理、成本控制及监理经验，能够独立负责大型工程项目的全过程管理。
+            </p>
+        </section>
+
+        <!-- 职业资格 - 核心价值 -->
+        <section class="mb-8">
+            <h2 class="section-title">
+                <span class="mr-2">📜</span> 核心职业资格 (多证合一)
+            </h2>
+            <div class="grid grid-cols-1 gap-3">
+                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-0g border-l-0 border-blue-600">
+                    <span class="font-bold text-gray-800">一级造价工程师</span>
+                    <span class="text-sm text-gray-500 italic">2020.10</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-0g border-l-0 border-blue-600">
+                    <span class="font-bold text-gray-800">一级监理工程师</span>
+                    <span class="text-sm text-gray-500 italic">2020.09</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-0g border-l-0 border-blue-600">
+                    <span class="font-bold text-gray-800">一级消防工程师</span>
+                    <span class="text-sm text-gray-500 italic">2018.11</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-blue-50 rounded-0g border-l-0 border-blue-600">
+                    <span class="font-bold text-gray-800">一级建造师 (机电工程)</span>
+                    <span class="text-sm text-gray-500 italic">2015.10</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-0g border-l-0 border-gray-400">
+                    <span class="font-bold text-gray-800">二级建造师 (市政公用)</span>
+                    <span class="text-sm text-gray-500 italic">2013.05</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-0g border-l-0 border-gray-400">
+                    <span class="font-bold text-gray-800">中级专业技术职称</span>
+                    <span class="text-sm text-gray-500 italic">2005.11</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 期望职位 -->
+        <section class="mb-8">
+            <h2 class="section-title">
+                <span class="mr-2">🎯</span> 期望职位
+            </h2>
+            <div class="flex flex-wrap gap-2 text-sm">
+                <span class="border border-gray-300 px-3 py-1 rounded-full text-gray-600">项目经理</span>
+                <span class="border border-gray-300 px-3 py-1 rounded-full text-gray-600">造价师/预算师</span>
+                <span class="border border-gray-300 px-3 py-1 rounded-full text-gray-600">工程监理</span>
+                <span class="border border-gray-300 px-3 py-1 rounded-full text-gray-600">安全消防管理</span>
+            </div>
+        </section>
+
+        <!-- 教育经历 -->
+        <section>
+            <h2 class="section-title">
+                <span class="mr-2">🎓</span> 教育经历
+            </h2>
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="font-bold text-gray-800">东南大学</h3>
+                    <p class="text-sm text-gray-600">自动化专业 · 工学学士</p>
+                </div>
+                <span class="text-sm text-gray-500">2006.07 - 2009.07</span>
+            </div>
+        </section>
+    </div>
+</div>
+
+</body>
+</html>
